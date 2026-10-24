@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+
+# Contém credenciais locais do MySQL.
+config.py
+
+# Saídas locais da aplicação.
+network_mapper.log*
+relatorios/
