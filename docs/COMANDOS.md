@@ -377,6 +377,9 @@ python -m pytest -q
 
 ## API REST
 
+A explicação detalhada de todos os caminhos, parâmetros, respostas e códigos
+HTTP está disponível em `API_REST.md`.
+
 Instalar as dependências da API:
 
 ```powershell
@@ -455,10 +458,30 @@ Consultar eventos com filtros pelo `curl`:
 curl.exe "http://127.0.0.1:8000/api/v1/events?network=192.168.1.0%2F24&event_type=OFFLINE&page=1&limit=100"
 ```
 
+Consultar dispositivos pelo `curl`:
+
+```powershell
+curl.exe "http://127.0.0.1:8000/api/v1/devices?page=1&limit=10"
+```
+
 Consultar a API com Python:
 
 ```powershell
 python -c "import httpx; print(httpx.get('http://127.0.0.1:8000/api/v1/networks').json())"
+```
+
+Consultar eventos com Python e parâmetros separados:
+
+```python
+import httpx
+
+response = httpx.get(
+    "http://127.0.0.1:8000/api/v1/events",
+    params={"event_type": "OFFLINE", "page": 1, "limit": 100},
+    timeout=10,
+)
+response.raise_for_status()
+print(response.json())
 ```
 
 Consultar um dispositivo e suas portas:

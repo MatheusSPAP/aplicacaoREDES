@@ -4,7 +4,8 @@ Scanner IPv4 que detecta automaticamente a interface principal e sua máscara,
 envia requisições ARP em broadcast e mostra IP, MAC e fabricante dos dispositivos
 que responderem.
 
-Para uma referência rápida com todos os comandos, consulte `COMANDOS.md`.
+Para uma referência rápida com todos os comandos, consulte
+[docs/COMANDOS.md](docs/COMANDOS.md).
 
 ## Instalação
 
@@ -54,7 +55,7 @@ A API não exige chave, portanto mantenha-a em `127.0.0.1` ou proteja-a no proxy
 reverso antes de permitir acesso externo. Em desenvolvimento, a documentação
 fica em `/docs`, `/redoc` e `/openapi.json`. Defina
 `NETWORK_MAPPER_API_ENV=production` para desabilitá-la por padrão. Consulte
-[COMANDOS.md](COMANDOS.md) para todos os endpoints, variáveis e exemplos.
+[docs/COMANDOS.md](docs/COMANDOS.md) para todos os endpoints, variáveis e exemplos.
 
 ## Organização do código
 
@@ -72,6 +73,16 @@ tests/                     testes automatizados das duas interfaces
 
 Os arquivos de entrada na raiz são intencionalmente pequenos, portanto os
 comandos existentes continuam funcionando após a reorganização.
+
+Para entender a criação das tabelas, relacionamentos, histórico, migrações e o
+uso do MySQL pela API, consulte
+[docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md).
+
+Para conhecer cada endpoint, seus parâmetros, requests, respostas e erros,
+consulte [docs/API_REST.md](docs/API_REST.md).
+
+O índice de toda a documentação complementar está em
+[docs/README.md](docs/README.md).
 
 ## Histórico no MySQL
 
