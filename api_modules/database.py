@@ -6,7 +6,7 @@ import threading
 from collections.abc import Iterator
 from typing import Any
 
-from api_config import APISettings
+from .config import APISettings
 
 
 class DatabasePool:

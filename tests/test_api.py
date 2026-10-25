@@ -10,7 +10,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api import create_app
-from api_config import APISettings
+from api_modules.config import APISettings
 
 
 class FakeCursor:
@@ -54,13 +54,13 @@ def auth() -> dict[str, str]:
 
 
 def test_endpoints_do_not_require_api_key(client: TestClient) -> None:
-    with patch("api_routes.fetch_inventory", return_value=[]):
+    with patch("api_modules.routes.fetch_inventory", return_value=[]):
         assert client.get("/api/v1/devices").status_code == 200
 
 
 def test_devices_returns_json_and_applies_pagination(client: TestClient) -> None:
     row = {"network": "192.168.1.0/24", "mac": "AA:BB:CC:DD:EE:FF", "status": "online"}
-    with patch("api_routes.fetch_inventory", return_value=[row]) as fetch:
+    with patch("api_modules.routes.fetch_inventory", return_value=[row]) as fetch:
         response = client.get(
             "/api/v1/devices?page=3&limit=20&network=192.168.1.7/24&status=online",
             headers=auth(),
@@ -75,7 +75,7 @@ def test_devices_returns_json_and_applies_pagination(client: TestClient) -> None
 
 
 def test_events_filter_by_type(client: TestClient) -> None:
-    with patch("api_routes.fetch_events", return_value=[]) as fetch:
+    with patch("api_modules.routes.fetch_events", return_value=[]) as fetch:
         response = client.get("/api/v1/events?event_type=OFFLINE&page=2&limit=5", headers=auth())
     assert response.status_code == 200
     assert fetch.call_args.kwargs["event_types"] == {"OFFLINE"}
@@ -91,7 +91,7 @@ def test_invalid_parameters_return_422(client: TestClient, query: str) -> None:
 
 
 def test_unknown_device_returns_404(client: TestClient) -> None:
-    with patch("api_routes.get_device_history", return_value=None):
+    with patch("api_modules.routes.get_device_history", return_value=None):
         response = client.get("/api/v1/devices/AA:BB:CC:DD:EE:FF", headers=auth())
     assert response.status_code == 404
 
@@ -117,7 +117,7 @@ def test_health_checks_database(client: TestClient) -> None:
 
 
 def test_report_json(client: TestClient) -> None:
-    with patch("api_routes.report_datasets", return_value={"inventario": [{"mac": "AA"}]}):
+    with patch("api_modules.routes.report_datasets", return_value={"inventario": [{"mac": "AA"}]}):
         response = client.get(
             "/api/v1/reports?report_type=inventario&format=json", headers=auth()
         )
@@ -131,7 +131,7 @@ def test_report_file_download(client: TestClient) -> None:
         path.write_text("mac,status\nAA,online\n", encoding="utf-8")
         return (path,)
 
-    with patch("api_routes.generate_report", side_effect=fake_report):
+    with patch("api_modules.routes.generate_report", side_effect=fake_report):
         response = client.get(
             "/api/v1/reports?report_type=inventario&format=csv", headers=auth()
         )

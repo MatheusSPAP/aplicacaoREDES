@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 
-from analytics import (
+from network_mapper_core.analytics import (
     INVENTORY_EVENT_TYPES,
     PRESENCE_EVENT_TYPES,
     QueryFilters,
@@ -27,9 +27,9 @@ from analytics import (
     fetch_top_disconnects,
     parse_datetime,
 )
-from api_models import DataResponse, HealthResponse, PaginatedResponse
-from mysql_storage import get_device_history, normalize_mac
-from reporting import generate_report, report_datasets
+from .models import DataResponse, HealthResponse, PaginatedResponse
+from network_mapper_core.storage import get_device_history, normalize_mac
+from network_mapper_core.reporting import generate_report, report_datasets
 
 
 EventType = Literal[

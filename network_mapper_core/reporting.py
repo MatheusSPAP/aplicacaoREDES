@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from analytics import (
+from .analytics import (
     CHANGE_EVENT_TYPES,
     QueryFilters,
     fetch_availability,

@@ -56,6 +56,23 @@ fica em `/docs`, `/redoc` e `/openapi.json`. Defina
 `NETWORK_MAPPER_API_ENV=production` para desabilitá-la por padrão. Consulte
 [COMANDOS.md](COMANDOS.md) para todos os endpoints, variáveis e exemplos.
 
+## Organização do código
+
+O projeto separa as duas interfaces e mantém o núcleo compartilhado:
+
+```text
+network_mapper.py          entrada compatível do terminal
+api.py                     entrada compatível do Uvicorn
+api_server.py              inicializador da API por ambiente
+terminal_app/              implementação da aplicação de terminal
+api_modules/               rotas, modelos, configuração e banco da API
+network_mapper_core/       descoberta, MySQL, consultas e relatórios
+tests/                     testes automatizados das duas interfaces
+```
+
+Os arquivos de entrada na raiz são intencionalmente pequenos, portanto os
+comandos existentes continuam funcionando após a reorganização.
+
 ## Histórico no MySQL
 
 Edite `config.py` e informe os mesmos dados usados na conexão do MySQL Workbench:

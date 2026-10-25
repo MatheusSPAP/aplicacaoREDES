@@ -5,7 +5,12 @@ from __future__ import annotations
 import unittest
 from datetime import datetime
 
-from analytics import CHANGE_EVENT_TYPES, QueryFilters, fetch_events, fetch_inventory
+from network_mapper_core.analytics import (
+    CHANGE_EVENT_TYPES,
+    QueryFilters,
+    fetch_events,
+    fetch_inventory,
+)
 
 
 class FakeCursor:

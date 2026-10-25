@@ -8,13 +8,13 @@ import socket
 import unittest
 from unittest.mock import patch
 
-from advanced_discovery import (
+from network_mapper_core.discovery import (
     parse_ports,
     resolve_hostname,
     scan_tcp_port,
 )
-from mysql_storage import classify_port_change
-from network_mapper import Device, enrich_devices
+from network_mapper_core.storage import classify_port_change
+from terminal_app.cli import Device, enrich_devices
 
 
 class FakeSocket:
@@ -51,7 +51,7 @@ class AdvancedDiscoveryTests(unittest.TestCase):
         )
         self.assertEqual((result.hostname, result.source), ("camera.local", "fqdn"))
 
-    @patch("advanced_discovery._confirm_service", return_value=("SSH", "SSH-2.0-test"))
+    @patch("network_mapper_core.discovery._confirm_service", return_value=("SSH", "SSH-2.0-test"))
     def test_open_port_with_confirmed_service(self, _confirm: object) -> None:
         result = scan_tcp_port(
             "192.168.1.10", 22, 0.2,
@@ -79,7 +79,7 @@ class AdvancedDiscoveryTests(unittest.TestCase):
             ("closed", "PORT_CLOSED", "HTTP", "closed"),
         )
 
-    @patch("network_mapper.discover_devices", side_effect=OSError("falha DNS simulada"))
+    @patch("terminal_app.cli.discover_devices", side_effect=OSError("falha DNS simulada"))
     def test_enrichment_failure_does_not_change_arp_devices(self, _discover: object) -> None:
         args = argparse.Namespace(
             resolver_hostname=True,

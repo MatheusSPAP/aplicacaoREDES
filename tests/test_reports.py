@@ -8,8 +8,17 @@ import unittest
 from datetime import datetime
 from pathlib import Path
 
-from analytics import calculate_availability, estimate_availability, parse_datetime
-from reporting import export_csv, export_excel, export_pdf, next_scheduled_time
+from network_mapper_core.analytics import (
+    calculate_availability,
+    estimate_availability,
+    parse_datetime,
+)
+from network_mapper_core.reporting import (
+    export_csv,
+    export_excel,
+    export_pdf,
+    next_scheduled_time,
+)
 
 
 class ReportTests(unittest.TestCase):

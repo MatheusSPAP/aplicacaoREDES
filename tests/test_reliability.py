@@ -6,8 +6,8 @@ import ipaddress
 import unittest
 from unittest.mock import patch
 
-from mysql_storage import ResilientMySQL, advance_presence
-from network_mapper import (
+from network_mapper_core.storage import ResilientMySQL, advance_presence
+from terminal_app.cli import (
     Device,
     ScanResult,
     next_scan_deadline,
@@ -27,7 +27,7 @@ class ReliabilityTests(unittest.TestCase):
     def setUp(self) -> None:
         self.network = ipaddress.IPv4Network("192.168.1.0/24")
 
-    @patch("network_mapper.validate_local_target")
+    @patch("terminal_app.cli.validate_local_target")
     def test_empty_arp_result_is_unhealthy(self, _validate: object) -> None:
         result = perform_scan(
             "Wi-Fi", self.network, 1.0, 0,
@@ -37,7 +37,7 @@ class ReliabilityTests(unittest.TestCase):
         self.assertEqual(result.devices, ())
         self.assertIn("preservados", result.error or "")
 
-    @patch("network_mapper.validate_local_target")
+    @patch("terminal_app.cli.validate_local_target")
     def test_arp_exception_is_scan_failure(self, _validate: object) -> None:
         def failing_scan(*_args: object) -> list[Device]:
             raise OSError("interface indisponível")
