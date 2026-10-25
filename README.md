@@ -41,6 +41,21 @@ Use `python network_mapper.py --help` para consultar todas as opções. Se o nom
 amigável não for reconhecido pelo Npcap, utilize o identificador exibido pelo
 Scapy, como `\Device\NPF_{...}`.
 
+## API REST
+
+A API FastAPI é somente leitura e roda independentemente dos scanners:
+
+```powershell
+$env:NETWORK_MAPPER_DB_PASSWORD = "sua-senha"
+python -m uvicorn api:app --host 127.0.0.1 --port 8000
+```
+
+A API não exige chave, portanto mantenha-a em `127.0.0.1` ou proteja-a no proxy
+reverso antes de permitir acesso externo. Em desenvolvimento, a documentação
+fica em `/docs`, `/redoc` e `/openapi.json`. Defina
+`NETWORK_MAPPER_API_ENV=production` para desabilitá-la por padrão. Consulte
+[COMANDOS.md](COMANDOS.md) para todos os endpoints, variáveis e exemplos.
+
 ## Histórico no MySQL
 
 Edite `config.py` e informe os mesmos dados usados na conexão do MySQL Workbench:

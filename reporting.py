@@ -19,12 +19,16 @@ from analytics import (
 
 
 def report_datasets(
-    connection: Any, report_type: str, filters: QueryFilters
+    connection: Any,
+    report_type: str,
+    filters: QueryFilters,
+    *,
+    event_types: set[str] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     if report_type == "inventario":
         return {"inventario": fetch_inventory(connection, filters)}
     if report_type == "eventos":
-        return {"eventos": fetch_events(connection, filters)}
+        return {"eventos": fetch_events(connection, filters, event_types=event_types)}
     if report_type == "disponibilidade":
         return {"disponibilidade": fetch_availability(connection, filters)}
     if report_type == "desconexoes":
@@ -34,7 +38,7 @@ def report_datasets(
     if report_type == "completo":
         return {
             "inventario": fetch_inventory(connection, filters),
-            "eventos": fetch_events(connection, filters),
+            "eventos": fetch_events(connection, filters, event_types=event_types),
             "disponibilidade": fetch_availability(connection, filters),
             "desconexoes": fetch_top_disconnects(connection, filters),
         }
@@ -162,9 +166,10 @@ def generate_report(
     output_dir: str | Path = "relatorios",
     *,
     generated_at: datetime | None = None,
+    event_types: set[str] | None = None,
 ) -> tuple[Path, ...]:
     generated_at = generated_at or datetime.now()
-    datasets = report_datasets(connection, report_type, filters)
+    datasets = report_datasets(connection, report_type, filters, event_types=event_types)
     base_path = _base_path(output_dir, report_type, generated_at)
     exporters = {"csv": export_csv, "xlsx": export_excel, "pdf": export_pdf}
     try:

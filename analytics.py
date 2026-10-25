@@ -231,6 +231,46 @@ def fetch_top_disconnects(connection: Any, filters: QueryFilters) -> list[dict[s
         cursor.close()
 
 
+def fetch_networks(connection: Any) -> list[dict[str, Any]]:
+    """Resume as redes conhecidas e seus estados atuais."""
+
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            "SELECT network_cidr AS network,COUNT(*) AS devices,"
+            "SUM(status='online') AS online,SUM(status='offline') AS offline,"
+            "MIN(first_seen) AS first_seen,MAX(last_seen) AS last_seen "
+            "FROM network_device_state GROUP BY network_cidr ORDER BY network_cidr"
+        )
+        return list(cursor.fetchall())
+    finally:
+        cursor.close()
+
+
+def fetch_device_ports(
+    connection: Any, mac: str, network: str | None = None
+) -> list[dict[str, Any]]:
+    """Retorna portas e serviços persistidos, sem executar scanner TCP."""
+
+    clauses = ["mac_address=%s"]
+    params: list[Any] = [mac]
+    if network:
+        clauses.append("network_cidr=%s")
+        params.append(network)
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            "SELECT network_cidr AS network,mac_address AS mac,port,current_state AS state,"
+            "last_result,service_name AS service,confidence,evidence,first_seen,last_checked,"
+            "last_opened FROM device_ports WHERE " + " AND ".join(clauses) +
+            " ORDER BY network_cidr,port",
+            tuple(params),
+        )
+        return list(cursor.fetchall())
+    finally:
+        cursor.close()
+
+
 def _state_after(state: str | None, event_type: str) -> str | None:
     if event_type in {"NEW", "RECONNECTED"}:
         return "online"

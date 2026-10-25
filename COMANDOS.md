@@ -318,6 +318,26 @@ python network_mapper.py --agendar-relatorios mensal `
 
 ## MySQL e reconexão
 
+Informar a conexão MySQL diretamente pelo terminal:
+
+```powershell
+python network_mapper.py --consultar inventario `
+  --mysql-host localhost --mysql-port 3306 `
+  --mysql-user root --mysql-database network_mapper
+```
+
+Opções de conexão disponíveis:
+
+```text
+--mysql-host SERVIDOR
+--mysql-port PORTA
+--mysql-user USUARIO
+--mysql-database BANCO
+```
+
+A senha continua sendo lida de `config.py` ou da variável de ambiente
+`NETWORK_MAPPER_DB_PASSWORD`, evitando sua exposição no histórico do terminal.
+
 Alterar tentativas e atraso inicial de reconexão:
 
 ```powershell
@@ -347,6 +367,156 @@ Executar os testes automatizados:
 
 ```powershell
 python -m unittest discover -s tests -v
+```
+
+Executar todos os testes, incluindo a API REST:
+
+```powershell
+python -m pytest -q
+```
+
+## API REST
+
+Instalar as dependências da API:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Configurar a conexão MySQL na sessão atual do PowerShell:
+
+```powershell
+$env:NETWORK_MAPPER_DB_HOST = "localhost"
+$env:NETWORK_MAPPER_DB_PORT = "3306"
+$env:NETWORK_MAPPER_DB_USER = "network_mapper_readonly"
+$env:NETWORK_MAPPER_DB_PASSWORD = "sua-senha"
+$env:NETWORK_MAPPER_DB_NAME = "network_mapper"
+```
+
+Iniciar diretamente com Uvicorn, sem executar o scanner:
+
+```powershell
+python -m uvicorn api:app --host 127.0.0.1 --port 8000
+```
+
+Ou configurar host e porta por ambiente e usar o inicializador:
+
+```powershell
+$env:NETWORK_MAPPER_API_HOST = "127.0.0.1"
+$env:NETWORK_MAPPER_API_PORT = "8000"
+python api_server.py
+```
+
+Desenvolvimento com recarga automática:
+
+```powershell
+python -m uvicorn api:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Configurar CORS restritivo para uma ou mais origens, separadas por vírgula:
+
+```powershell
+$env:NETWORK_MAPPER_API_CORS_ORIGINS = "https://inventario.exemplo.com,https://admin.exemplo.com"
+```
+
+Produção com documentação desabilitada:
+
+```powershell
+$env:NETWORK_MAPPER_API_ENV = "production"
+$env:NETWORK_MAPPER_API_DOCS_ENABLED = "false"
+python api_server.py
+```
+
+Permitir os cabeçalhos de um proxy reverso local confiável:
+
+```powershell
+$env:NETWORK_MAPPER_API_FORWARDED_ALLOW_IPS = "127.0.0.1"
+python api_server.py
+```
+
+Documentação automática em desenvolvimento:
+
+```text
+http://127.0.0.1:8000/docs
+http://127.0.0.1:8000/redoc
+http://127.0.0.1:8000/openapi.json
+```
+
+Consultar dispositivos pelo PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/v1/devices?page=1&limit=50&status=online"
+```
+
+Consultar eventos com filtros pelo `curl`:
+
+```powershell
+curl.exe "http://127.0.0.1:8000/api/v1/events?network=192.168.1.0%2F24&event_type=OFFLINE&page=1&limit=100"
+```
+
+Consultar a API com Python:
+
+```powershell
+python -c "import httpx; print(httpx.get('http://127.0.0.1:8000/api/v1/networks').json())"
+```
+
+Consultar um dispositivo e suas portas:
+
+```powershell
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/v1/devices/AA:BB:CC:DD:EE:FF"
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/v1/devices/AA:BB:CC:DD:EE:FF/ports"
+```
+
+Consultar disponibilidade e desconexões:
+
+```powershell
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/v1/availability?network=192.168.1.0%2F24"
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/v1/disconnections?limit=20"
+```
+
+Consultar a saúde da API e do banco:
+
+```powershell
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/v1/health"
+```
+
+Obter relatório como JSON:
+
+```powershell
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/v1/reports?report_type=inventario&format=json"
+```
+
+Baixar relatórios CSV, Excel e PDF:
+
+```powershell
+Invoke-WebRequest `
+  -Uri "http://127.0.0.1:8000/api/v1/reports?report_type=eventos&format=csv" `
+  -OutFile "eventos.csv"
+Invoke-WebRequest `
+  -Uri "http://127.0.0.1:8000/api/v1/reports?report_type=inventario&format=xlsx" `
+  -OutFile "inventario.xlsx"
+Invoke-WebRequest `
+  -Uri "http://127.0.0.1:8000/api/v1/reports?report_type=disponibilidade&format=pdf" `
+  -OutFile "disponibilidade.pdf"
+```
+
+Variáveis da API:
+
+```text
+NETWORK_MAPPER_API_ENV
+NETWORK_MAPPER_API_DOCS_ENABLED
+NETWORK_MAPPER_API_HOST
+NETWORK_MAPPER_API_PORT
+NETWORK_MAPPER_API_CORS_ORIGINS
+NETWORK_MAPPER_API_DB_POOL_SIZE
+NETWORK_MAPPER_API_FORWARDED_ALLOW_IPS
 ```
 
 ## Observações
